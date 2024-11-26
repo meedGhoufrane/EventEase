@@ -14,20 +14,25 @@ const mongoose_1 = require("@nestjs/mongoose");
 const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
 const user_entity_1 = require("./entities/user.entity");
+const jwt_auth_middleware_1 = require("./middleware/jwt-auth.middleware");
 const dotenv = require("dotenv");
 dotenv.config();
 let UsersModule = class UsersModule {
+    configure(consumer) {
+        consumer.apply(jwt_auth_middleware_1.JwtAuthMiddleware).forRoutes('users');
+    }
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule.forRoot(),
             mongoose_1.MongooseModule.forFeature([{ name: 'User', schema: user_entity_1.UserSchema }]),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
                 useFactory: async (configService) => ({
-                    secret: configService.get('JWT_SECRET'),
+                    secret: configService.get('JWT_SECRET') || 'your_jwt_secret',
                     signOptions: { expiresIn: '1h' },
                 }),
             }),
