@@ -7,5 +7,8 @@ export declare class UsersController {
         user: import("./dto/users.dto").UserResponseDto;
         message: string;
     }>;
-    login(loginDto: LoginDto): Promise<any>;
+    login(loginDto: LoginDto): Promise<{
+        user: import("./dto/users.dto").UserResponseDto;
+        token: string;
+    }>;
 }

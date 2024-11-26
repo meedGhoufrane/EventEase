@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
-import { RegisterDto, UserResponseDto } from './dto/users.dto';
+import { RegisterDto, LoginDto, UserResponseDto } from './dto/users.dto';
 import { JwtService } from '@nestjs/jwt';
 export declare class UsersService {
     private userModel;
@@ -9,5 +9,9 @@ export declare class UsersService {
     register(registerDto: RegisterDto): Promise<{
         user: UserResponseDto;
         message: string;
+    }>;
+    login(loginDto: LoginDto): Promise<{
+        user: UserResponseDto;
+        token: string;
     }>;
 }
