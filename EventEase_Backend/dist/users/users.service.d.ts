@@ -1,9 +1,13 @@
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Model } from 'mongoose';
+import { User } from './entities/user.entity';
+import { RegisterDto, UserResponseDto } from './dto/users.dto';
+import { JwtService } from '@nestjs/jwt';
 export declare class UsersService {
-    create(createUserDto: CreateUserDto): string;
-    findAll(): string;
-    findOne(id: number): string;
-    update(id: number, updateUserDto: UpdateUserDto): string;
-    remove(id: number): string;
+    private userModel;
+    private jwtService;
+    constructor(userModel: Model<User>, jwtService: JwtService);
+    register(registerDto: RegisterDto): Promise<{
+        user: UserResponseDto;
+        message: string;
+    }>;
 }
