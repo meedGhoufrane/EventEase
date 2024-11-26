@@ -1,25 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
 export type EventDocument = Event & Document;
 
 @Schema({ timestamps: true })
 export class Event {
-    @Prop({ required: true })
-    name: string;
+  @Prop({ required: true })
+  title: string;
 
-    @Prop({ required: true })
-    date: Date;
+  @Prop({ required: true })
+  description: string;
 
-    @Prop({ required: true })
-    location: string;
+  @Prop({ required: true })
+  date: Date;
 
-    @Prop({ type: [Types.ObjectId], ref: 'Participant', default: [] })
-    participants: Types.ObjectId[];
+  @Prop({ required: true })
+  location: string;
 
-    @Prop({ type: Types.ObjectId, ref: 'Auth', required: true })
-    createdBy: Types.ObjectId;
-
+  @Prop({ default: 0 })
+  maxParticipants: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
