@@ -20,9 +20,15 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [event_module_1.EventModule, participants_module_1.ParticipantsModule, users_module_1.UsersModule, config_1.ConfigModule.forRoot({
+        imports: [
+            event_module_1.EventModule,
+            participants_module_1.ParticipantModule,
+            users_module_1.UsersModule,
+            config_1.ConfigModule.forRoot({
                 isGlobal: true,
-            }), database_config_1.DatabaseConfig],
+            }),
+            database_config_1.DatabaseConfig
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

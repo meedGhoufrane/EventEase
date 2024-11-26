@@ -1,7 +1,7 @@
 export declare class CreateEventDto {
-    readonly title: string;
-    readonly description: string;
-    readonly date: Date;
-    readonly location: string;
-    readonly maxParticipants?: number;
+    name: string;
+    date: Date;
+    location: string;
+    description: string;
+    participants?: string[];
 }

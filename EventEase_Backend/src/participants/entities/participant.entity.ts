@@ -1,9 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
+import { Event } from '../../event/entities/event.entity'; 
 
 export type ParticipantDocument = Participant & Document;
 
-@Schema({ timestamps: true })
+@Schema()
 export class Participant {
   @Prop({ required: true })
   name: string;
@@ -11,11 +12,8 @@ export class Participant {
   @Prop({ required: true })
   email: string;
 
-  @Prop({ required: true })
-  phone: string;
-
-  @Prop({ required: true })
-  event: string; // References the Event they are participating in
+  @Prop({ type: Types.ObjectId, ref: 'Event', required: true })
+  event: Types.ObjectId; 
 }
 
 export const ParticipantSchema = SchemaFactory.createForClass(Participant);
