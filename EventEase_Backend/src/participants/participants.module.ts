@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ParticipantService } from './participants.service';
 import { ParticipantController } from './participants.controller';
+import { ParticipantService } from './participants.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Participant, ParticipantSchema } from './entities/participant.entity';
+import { Event, EventSchema } from '../event/entities/event.entity';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Participant.name, schema: ParticipantSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Participant.name, schema: ParticipantSchema }]),
+    MongooseModule.forFeature([{ name: Event.name, schema: EventSchema }]),  // Ensure Event is registered
+  ],
   controllers: [ParticipantController],
   providers: [ParticipantService],
-  exports: [ParticipantService],  
 })
-export class ParticipantModule {}  
+export class ParticipantModule {}

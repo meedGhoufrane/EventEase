@@ -19,7 +19,11 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEventDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateEventDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", Date)
 ], CreateEventDto.prototype, "date", void 0);
 __decorate([
@@ -27,12 +31,12 @@ __decorate([
     __metadata("design:type", String)
 ], CreateEventDto.prototype, "location", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateEventDto.prototype, "description", void 0);
-__decorate([
     (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsMongoId)({ each: true }),
     __metadata("design:type", Array)
 ], CreateEventDto.prototype, "participants", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", Number)
+], CreateEventDto.prototype, "maxParticipants", void 0);
 //# sourceMappingURL=create-event.dto.js.map

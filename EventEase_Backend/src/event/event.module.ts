@@ -14,5 +14,6 @@ import { EventController } from './event.controller';
   ],
   controllers: [EventController],
   providers: [EventService],
+  exports: [MongooseModule.forFeature([{ name: Event.name, schema: EventSchema }])] // Export EventModel
 })
 export class EventModule {}

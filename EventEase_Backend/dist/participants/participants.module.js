@@ -8,19 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParticipantModule = void 0;
 const common_1 = require("@nestjs/common");
-const participants_service_1 = require("./participants.service");
 const participants_controller_1 = require("./participants.controller");
+const participants_service_1 = require("./participants.service");
 const mongoose_1 = require("@nestjs/mongoose");
 const participant_entity_1 = require("./entities/participant.entity");
+const event_entity_1 = require("../event/entities/event.entity");
 let ParticipantModule = class ParticipantModule {
 };
 exports.ParticipantModule = ParticipantModule;
 exports.ParticipantModule = ParticipantModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: participant_entity_1.Participant.name, schema: participant_entity_1.ParticipantSchema }])],
+        imports: [
+            mongoose_1.MongooseModule.forFeature([{ name: participant_entity_1.Participant.name, schema: participant_entity_1.ParticipantSchema }]),
+            mongoose_1.MongooseModule.forFeature([{ name: event_entity_1.Event.name, schema: event_entity_1.EventSchema }]),
+        ],
         controllers: [participants_controller_1.ParticipantController],
         providers: [participants_service_1.ParticipantService],
-        exports: [participants_service_1.ParticipantService],
     })
 ], ParticipantModule);
 //# sourceMappingURL=participants.module.js.map

@@ -1,23 +1,39 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Participant, ParticipantDocument } from './entities/participant.entity'; // Correct import
+import { Participant, ParticipantDocument } from './entities/participant.entity';
+import { Event, EventDocument } from '../event/entities/event.entity'; // Import Event
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
 
 @Injectable()
 export class ParticipantService {
   constructor(
-    @InjectModel(Participant.name) private participantModel: Model<ParticipantDocument>, 
-  ) {}
+    @InjectModel(Participant.name) private participantModel: Model<ParticipantDocument>,
+    @InjectModel(Event.name) private eventModel: Model<EventDocument>, // Inject EventModel here
+  ) { }
 
   async create(createParticipantDto: CreateParticipantDto): Promise<Participant> {
+    // Step 1: Create a new participant
     const participant = new this.participantModel(createParticipantDto);
-    return participant.save();
+    const savedParticipant = await participant.save();
+  
+    // Step 2: Retrieve the event by the provided event ID
+    const event = await this.eventModel.findById(createParticipantDto.event);
+    if (!event) {
+      throw new NotFoundException(`Event with ID "${createParticipantDto.event}" not found`);
+    }
+  
+    event.participants.push(savedParticipant._id as Types.ObjectId); // Use Types.ObjectId to cast the ID
+  
+    await event.save();
+  
+    return savedParticipant;
   }
+  
 
   async findAll(): Promise<Participant[]> {
-    return this.participantModel.find().populate('event').exec(); 
+    return this.participantModel.find().populate('event').exec();
   }
 
   async findOne(id: string): Promise<Participant> {
@@ -38,6 +54,4 @@ export class ParticipantService {
     }
     return updatedParticipant;
   }
-
-  
 }
