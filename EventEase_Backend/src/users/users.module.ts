@@ -11,7 +11,7 @@ dotenv.config();
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Ensure environment variables are loaded
+    ConfigModule.forRoot(), 
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -12,69 +12,59 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParticipantsController = void 0;
+exports.ParticipantController = void 0;
 const common_1 = require("@nestjs/common");
 const participants_service_1 = require("./participants.service");
 const create_participant_dto_1 = require("./dto/create-participant.dto");
 const update_participant_dto_1 = require("./dto/update-participant.dto");
-let ParticipantsController = class ParticipantsController {
-    constructor(participantsService) {
-        this.participantsService = participantsService;
+let ParticipantController = class ParticipantController {
+    constructor(participantService) {
+        this.participantService = participantService;
     }
-    create(createParticipantDto) {
-        return this.participantsService.create(createParticipantDto);
+    async create(createParticipantDto) {
+        return this.participantService.create(createParticipantDto);
     }
-    findAll() {
-        return this.participantsService.findAll();
+    async findAll() {
+        return this.participantService.findAll();
     }
-    findOne(id) {
-        return this.participantsService.findOne(+id);
+    async findOne(id) {
+        return this.participantService.findOne(id);
     }
-    update(id, updateParticipantDto) {
-        return this.participantsService.update(+id, updateParticipantDto);
-    }
-    remove(id) {
-        return this.participantsService.remove(+id);
+    async update(id, updateParticipantDto) {
+        return this.participantService.update(id, updateParticipantDto);
     }
 };
-exports.ParticipantsController = ParticipantsController;
+exports.ParticipantController = ParticipantController;
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Post)('create'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_participant_dto_1.CreateParticipantDto]),
-    __metadata("design:returntype", void 0)
-], ParticipantsController.prototype, "create", null);
+    __metadata("design:returntype", Promise)
+], ParticipantController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ParticipantsController.prototype, "findAll", null);
+    __metadata("design:returntype", Promise)
+], ParticipantController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ParticipantsController.prototype, "findOne", null);
+    __metadata("design:returntype", Promise)
+], ParticipantController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
+    (0, common_1.Put)('Update/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_participant_dto_1.UpdateParticipantDto]),
-    __metadata("design:returntype", void 0)
-], ParticipantsController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ParticipantsController.prototype, "remove", null);
-exports.ParticipantsController = ParticipantsController = __decorate([
+    __metadata("design:returntype", Promise)
+], ParticipantController.prototype, "update", null);
+exports.ParticipantController = ParticipantController = __decorate([
     (0, common_1.Controller)('participants'),
-    __metadata("design:paramtypes", [participants_service_1.ParticipantsService])
-], ParticipantsController);
+    __metadata("design:paramtypes", [participants_service_1.ParticipantService])
+], ParticipantController);
 //# sourceMappingURL=participants.controller.js.map

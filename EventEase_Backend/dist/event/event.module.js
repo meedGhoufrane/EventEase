@@ -9,15 +9,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const event_entity_1 = require("./entities/event.entity");
+const participant_entity_1 = require("../participants/entities/participant.entity");
 const event_service_1 = require("./event.service");
 const event_controller_1 = require("./event.controller");
-const event_entity_1 = require("./entities/event.entity");
 let EventModule = class EventModule {
 };
 exports.EventModule = EventModule;
 exports.EventModule = EventModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: event_entity_1.Event.name, schema: event_entity_1.EventSchema }])],
+        imports: [
+            mongoose_1.MongooseModule.forFeature([
+                { name: event_entity_1.Event.name, schema: event_entity_1.EventSchema },
+                { name: participant_entity_1.Participant.name, schema: participant_entity_1.ParticipantSchema },
+            ]),
+        ],
         controllers: [event_controller_1.EventController],
         providers: [event_service_1.EventService],
     })

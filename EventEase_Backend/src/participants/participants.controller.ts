@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ParticipantsService } from './participants.service';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { ParticipantService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { Participant } from './entities/participant.entity';
 
 @Controller('participants')
-export class ParticipantsController {
-  constructor(private readonly participantsService: ParticipantsService) {}
+export class ParticipantController {
+  constructor(private readonly participantService: ParticipantService) {}
 
-  @Post()
-  create(@Body() createParticipantDto: CreateParticipantDto) {
-    return this.participantsService.create(createParticipantDto);
+  @Post('create')
+  async create(@Body() createParticipantDto: CreateParticipantDto): Promise<Participant> {
+    return this.participantService.create(createParticipantDto);
   }
 
   @Get()
-  findAll() {
-    return this.participantsService.findAll();
+  async findAll(): Promise<Participant[]> {
+    return this.participantService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.participantsService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<Participant> {
+    return this.participantService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateParticipantDto: UpdateParticipantDto) {
-    return this.participantsService.update(+id, updateParticipantDto);
+  @Put('Update/:id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateParticipantDto: UpdateParticipantDto,
+  ): Promise<Participant> {
+    return this.participantService.update(id, updateParticipantDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.participantsService.remove(+id);
-  }
+ 
 }
