@@ -17,13 +17,22 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const participant_entity_1 = require("./entities/participant.entity");
+const event_entity_1 = require("../event/entities/event.entity");
 let ParticipantService = class ParticipantService {
-    constructor(participantModel) {
+    constructor(participantModel, eventModel) {
         this.participantModel = participantModel;
+        this.eventModel = eventModel;
     }
     async create(createParticipantDto) {
         const participant = new this.participantModel(createParticipantDto);
-        return participant.save();
+        const savedParticipant = await participant.save();
+        const event = await this.eventModel.findById(createParticipantDto.event);
+        if (!event) {
+            throw new common_1.NotFoundException(`Event with ID "${createParticipantDto.event}" not found`);
+        }
+        event.participants.push(savedParticipant._id);
+        await event.save();
+        return savedParticipant;
     }
     async findAll() {
         return this.participantModel.find().populate('event').exec();
@@ -50,6 +59,8 @@ exports.ParticipantService = ParticipantService;
 exports.ParticipantService = ParticipantService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(participant_entity_1.Participant.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(1, (0, mongoose_1.InjectModel)(event_entity_1.Event.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model])
 ], ParticipantService);
 //# sourceMappingURL=participants.service.js.map

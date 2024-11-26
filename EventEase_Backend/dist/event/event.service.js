@@ -40,7 +40,9 @@ let EventService = class EventService {
         const event = new this.eventModel(createEventDto);
         await event.save();
         if (createEventDto.participants && createEventDto.participants.length > 0) {
-            const validParticipantIds = createEventDto.participants.filter(this.isValidObjectId);
+            const validParticipantIds = createEventDto.participants
+                .map(id => new mongoose_2.Types.ObjectId(id))
+                .filter((id) => mongoose_2.Types.ObjectId.isValid(id));
             if (validParticipantIds.length === 0) {
                 throw new common_1.NotFoundException('No valid participant IDs provided');
             }

@@ -1,7 +1,9 @@
+import { Types } from 'mongoose';
 export declare class CreateEventDto {
     name: string;
+    description: string;
     date: Date;
     location: string;
-    description: string;
-    participants?: string[];
+    participants: Types.ObjectId[];
+    maxParticipants: number;
 }
