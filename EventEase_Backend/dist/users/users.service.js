@@ -46,6 +46,29 @@ let UsersService = class UsersService {
             message: 'User registered successfully',
         };
     }
+    async login(loginDto) {
+        const { email, password } = loginDto;
+        const user = await this.userModel.findOne({ email }).exec();
+        if (!user) {
+            throw new common_1.BadRequestException('Invalid email or password');
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new common_1.BadRequestException('Invalid email or password');
+        }
+        const userResponse = {
+            username: user.username,
+            email: user.email,
+        };
+        const token = this.jwtService.sign({
+            sub: user._id,
+            email: user.email,
+        });
+        return {
+            user: userResponse,
+            token,
+        };
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
