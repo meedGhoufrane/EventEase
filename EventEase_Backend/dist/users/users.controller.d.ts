@@ -11,4 +11,5 @@ export declare class UsersController {
         user: import("./dto/users.dto").UserResponseDto;
         token: string;
     }>;
+    getProfile(req: any): Promise<any>;
 }
