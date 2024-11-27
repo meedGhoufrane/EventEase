@@ -7,3 +7,4 @@ import { ParticipantsController } from './participants.controller';
   providers: [ParticipantsService],
 })
 export class ParticipantsModule {}
+  
