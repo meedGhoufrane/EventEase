@@ -1,14 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
+import { Participant } from '../../participants/entities/participant.entity'; // Import Participant schema
 
-export type EventDocument = Event & Document;
-
-@Schema({ timestamps: true })
-export class Event {
+@Schema()
+export class Event extends Document {
   @Prop({ required: true })
-  title: string;
+  name: string;
 
-  @Prop({ required: true })
+  @Prop()
   description: string;
 
   @Prop({ required: true })
@@ -17,8 +16,14 @@ export class Event {
   @Prop({ required: true })
   location: string;
 
-  @Prop({ default: 0 })
-  maxParticipants: number;
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Participant' }] })
+  participants: Types.ObjectId[];
+  
+
+  @Prop({ required: true })
+  maxParticipants: number; 
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
+
+export type EventDocument = Event & Document;

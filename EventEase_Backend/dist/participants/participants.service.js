@@ -5,28 +5,62 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParticipantsService = void 0;
+exports.ParticipantService = void 0;
 const common_1 = require("@nestjs/common");
-let ParticipantsService = class ParticipantsService {
-    create(createParticipantDto) {
-        return 'This action adds a new participant';
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
+const participant_entity_1 = require("./entities/participant.entity");
+const event_entity_1 = require("../event/entities/event.entity");
+let ParticipantService = class ParticipantService {
+    constructor(participantModel, eventModel) {
+        this.participantModel = participantModel;
+        this.eventModel = eventModel;
     }
-    findAll() {
-        return `This action returns all participants`;
+    async create(createParticipantDto) {
+        const participant = new this.participantModel(createParticipantDto);
+        const savedParticipant = await participant.save();
+        const event = await this.eventModel.findById(createParticipantDto.event);
+        if (!event) {
+            throw new common_1.NotFoundException(`Event with ID "${createParticipantDto.event}" not found`);
+        }
+        event.participants.push(savedParticipant._id);
+        await event.save();
+        return savedParticipant;
     }
-    findOne(id) {
-        return `This action returns a #${id} participant`;
+    async findAll() {
+        return this.participantModel.find().populate('event').exec();
     }
-    update(id, updateParticipantDto) {
-        return `This action updates a #${id} participant`;
+    async findOne(id) {
+        const participant = await this.participantModel.findById(id).populate('event').exec();
+        if (!participant) {
+            throw new common_1.NotFoundException(`Participant with ID "${id}" not found`);
+        }
+        return participant;
     }
-    remove(id) {
-        return `This action removes a #${id} participant`;
+    async update(id, updateParticipantDto) {
+        const updatedParticipant = await this.participantModel
+            .findByIdAndUpdate(id, updateParticipantDto, { new: true })
+            .populate('event')
+            .exec();
+        if (!updatedParticipant) {
+            throw new common_1.NotFoundException(`Participant with ID "${id}" not found`);
+        }
+        return updatedParticipant;
     }
 };
-exports.ParticipantsService = ParticipantsService;
-exports.ParticipantsService = ParticipantsService = __decorate([
-    (0, common_1.Injectable)()
-], ParticipantsService);
+exports.ParticipantService = ParticipantService;
+exports.ParticipantService = ParticipantService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(participant_entity_1.Participant.name)),
+    __param(1, (0, mongoose_1.InjectModel)(event_entity_1.Event.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model])
+], ParticipantService);
 //# sourceMappingURL=participants.service.js.map

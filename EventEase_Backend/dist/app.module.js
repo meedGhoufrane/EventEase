@@ -12,14 +12,23 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const event_module_1 = require("./event/event.module");
 const participants_module_1 = require("./participants/participants.module");
-const mongoose_1 = require("@nestjs/mongoose");
+const config_1 = require("@nestjs/config");
+const database_config_1 = require("./config/database.config");
 const users_module_1 = require("./users/users.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [event_module_1.EventModule, participants_module_1.ParticipantsModule, users_module_1.UsersModule, mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/EventEase')],
+        imports: [
+            event_module_1.EventModule,
+            participants_module_1.ParticipantModule,
+            users_module_1.UsersModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
+            database_config_1.DatabaseConfig
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

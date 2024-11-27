@@ -11,15 +11,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventSchema = exports.Event = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-let Event = class Event {
+const mongoose_2 = require("mongoose");
+let Event = class Event extends mongoose_2.Document {
 };
 exports.Event = Event;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], Event.prototype, "title", void 0);
+], Event.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Event.prototype, "description", void 0);
 __decorate([
@@ -31,11 +32,15 @@ __decorate([
     __metadata("design:type", String)
 ], Event.prototype, "location", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: 0 }),
+    (0, mongoose_1.Prop)({ type: [{ type: mongoose_2.Types.ObjectId, ref: 'Participant' }] }),
+    __metadata("design:type", Array)
+], Event.prototype, "participants", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Number)
 ], Event.prototype, "maxParticipants", void 0);
 exports.Event = Event = __decorate([
-    (0, mongoose_1.Schema)({ timestamps: true })
+    (0, mongoose_1.Schema)()
 ], Event);
 exports.EventSchema = mongoose_1.SchemaFactory.createForClass(Event);
 //# sourceMappingURL=event.entity.js.map

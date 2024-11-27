@@ -1,10 +1,14 @@
-import { Model } from 'mongoose';
+import { Model, Document } from 'mongoose';
 import { Event, EventDocument } from './entities/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { Participant } from '../participants/entities/participant.entity';
 export declare class EventService {
     private eventModel;
-    constructor(eventModel: Model<EventDocument>);
+    private participantModel;
+    constructor(eventModel: Model<EventDocument>, participantModel: Model<Participant & Document>);
+    private isValidObjectId;
+    addParticipants(eventId: string, participants: string[]): Promise<Event>;
     create(createEventDto: CreateEventDto): Promise<{
         event: Event;
         message: string;

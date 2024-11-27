@@ -1,8 +1,23 @@
+import { IsArray, IsMongoId, IsString } from 'class-validator';
+import { Types } from 'mongoose';
+
 export class CreateEventDto {
-    readonly title: string;
-    readonly description: string;
-    readonly date: Date;
-    readonly location: string;
-    readonly maxParticipants?: number; // Optional
-  }
-  
+  @IsString()
+  name: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  date: Date;
+
+  @IsString()
+  location: string;
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  participants: Types.ObjectId[];  // Ensure participants are typed correctly as ObjectId[]
+
+  @IsString()
+  maxParticipants: number;
+}
