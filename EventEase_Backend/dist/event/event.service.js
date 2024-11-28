@@ -23,9 +23,6 @@ let EventService = class EventService {
         this.eventModel = eventModel;
         this.participantModel = participantModel;
     }
-    isValidObjectId(id) {
-        return mongoose_2.Types.ObjectId.isValid(id);
-    }
     async addParticipants(eventId, participants) {
         const event = await this.eventModel.findById(eventId);
         if (!event) {

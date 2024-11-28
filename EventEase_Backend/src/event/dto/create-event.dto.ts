@@ -16,8 +16,7 @@ export class CreateEventDto {
 
   @IsArray()
   @IsMongoId({ each: true })
-  participants: Types.ObjectId[];  // Ensure participants are typed correctly as ObjectId[]
-
+  participants: Types.ObjectId[]; 
   @IsString()
   maxParticipants: number;
 }

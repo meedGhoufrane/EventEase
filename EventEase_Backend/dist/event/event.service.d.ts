@@ -7,7 +7,6 @@ export declare class EventService {
     private eventModel;
     private participantModel;
     constructor(eventModel: Model<EventDocument>, participantModel: Model<Participant & Document>);
-    private isValidObjectId;
     addParticipants(eventId: string, participants: string[]): Promise<Event>;
     create(createEventDto: CreateEventDto): Promise<{
         event: Event;

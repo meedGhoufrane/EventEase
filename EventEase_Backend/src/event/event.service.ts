@@ -13,9 +13,9 @@ export class EventService {
     @InjectModel(Participant.name) private participantModel: Model<Participant & Document>, // Ensure correct typing for Participant
   ) {}
 
-  private isValidObjectId(id: string): boolean {
-    return Types.ObjectId.isValid(id);
-  }
+  // private isValidObjectId(id: string): boolean {
+  //   return Types.ObjectId.isValid(id);
+  // }
 
   async addParticipants(eventId: string, participants: string[]): Promise<Event> {
     const event = await this.eventModel.findById(eventId);
@@ -23,7 +23,7 @@ export class EventService {
       throw new NotFoundException(`Event with ID "${eventId}" not found`);
     }
 
-    const participantIds = participants.map(id => new Types.ObjectId(id)); // Ensure valid ObjectId
+    const participantIds = participants.map(id => new Types.ObjectId(id)); 
     event.participants.push(...participantIds);
 
     await event.save();
@@ -35,9 +35,8 @@ export class EventService {
     await event.save();
   
     if (createEventDto.participants && createEventDto.participants.length > 0) {
-      // Convert participants' IDs to ObjectIds and filter for valid ones
       const validParticipantIds = createEventDto.participants
-        .map(id => new Types.ObjectId(id)) // Convert string IDs to ObjectId
+        .map(id => new Types.ObjectId(id)) 
         .filter((id: Types.ObjectId) => Types.ObjectId.isValid(id));
   
       if (validParticipantIds.length === 0) {
@@ -52,8 +51,7 @@ export class EventService {
         throw new NotFoundException('One or more participants not found');
       }
   
-      // Cast participant._id to ObjectId to resolve type error
-      event.participants.push(...participants.map((participant) => participant._id as Types.ObjectId)); // Explicit casting
+      event.participants.push(...participants.map((participant) => participant._id as Types.ObjectId)); 
       await event.save();
     }
   
@@ -63,9 +61,6 @@ export class EventService {
     };
   }
   
-  
-
-
   async findAll(): Promise<Event[]> {
     return this.eventModel.find().populate('participants').exec();
   }

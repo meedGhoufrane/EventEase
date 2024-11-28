@@ -22,7 +22,15 @@ let ParticipantController = class ParticipantController {
         this.participantService = participantService;
     }
     async create(createParticipantDto) {
-        return this.participantService.create(createParticipantDto);
+        try {
+            return await this.participantService.create(createParticipantDto);
+        }
+        catch (error) {
+            if (error instanceof common_1.ConflictException) {
+                throw error;
+            }
+            throw error;
+        }
     }
     async findAll() {
         return this.participantService.findAll();
@@ -31,7 +39,18 @@ let ParticipantController = class ParticipantController {
         return this.participantService.findOne(id);
     }
     async update(id, updateParticipantDto) {
-        return this.participantService.update(id, updateParticipantDto);
+        try {
+            return await this.participantService.update(id, updateParticipantDto);
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw new common_1.NotFoundException(`Participant with ID "${id}" not found`);
+            }
+            throw error;
+        }
+    }
+    async remove(id) {
+        return this.participantService.remove(id);
     }
 };
 exports.ParticipantController = ParticipantController;
@@ -56,13 +75,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ParticipantController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Put)('Update/:id'),
+    (0, common_1.Put)('update/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_participant_dto_1.UpdateParticipantDto]),
     __metadata("design:returntype", Promise)
 ], ParticipantController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)('delete/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ParticipantController.prototype, "remove", null);
 exports.ParticipantController = ParticipantController = __decorate([
     (0, common_1.Controller)('participants'),
     __metadata("design:paramtypes", [participants_service_1.ParticipantService])

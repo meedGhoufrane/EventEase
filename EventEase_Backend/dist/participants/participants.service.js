@@ -24,15 +24,38 @@ let ParticipantService = class ParticipantService {
         this.eventModel = eventModel;
     }
     async create(createParticipantDto) {
-        const participant = new this.participantModel(createParticipantDto);
-        const savedParticipant = await participant.save();
-        const event = await this.eventModel.findById(createParticipantDto.event);
-        if (!event) {
-            throw new common_1.NotFoundException(`Event with ID "${createParticipantDto.event}" not found`);
+        const { email, cin } = createParticipantDto;
+        const existingParticipant = await this.participantModel.findOne({
+            $or: [{ email }, { cin }],
+        });
+        if (existingParticipant) {
+            if (existingParticipant.email === email && existingParticipant.cin === cin) {
+                throw new common_1.ConflictException('Email and CIN already exist');
+            }
+            else if (existingParticipant.email === email) {
+                throw new common_1.ConflictException('Email already exists');
+            }
+            else if (existingParticipant.cin === cin) {
+                throw new common_1.ConflictException('CIN already exists');
+            }
         }
-        event.participants.push(savedParticipant._id);
-        await event.save();
-        return savedParticipant;
+        try {
+            const participant = new this.participantModel(createParticipantDto);
+            const savedParticipant = await participant.save();
+            const event = await this.eventModel.findById(createParticipantDto.event);
+            if (!event) {
+                throw new common_1.NotFoundException(`Event with ID "${createParticipantDto.event}" not found`);
+            }
+            event.participants.push(savedParticipant._id);
+            await event.save();
+            return savedParticipant;
+        }
+        catch (error) {
+            if (error.code === 11000) {
+                throw new common_1.ConflictException('Duplicate key error');
+            }
+            throw error;
+        }
     }
     async findAll() {
         return this.participantModel.find().populate('event').exec();
@@ -45,14 +68,45 @@ let ParticipantService = class ParticipantService {
         return participant;
     }
     async update(id, updateParticipantDto) {
+        const { event: newEventId } = updateParticipantDto;
+        const existingParticipant = await this.participantModel.findById(id).exec();
+        if (!existingParticipant) {
+            throw new common_1.NotFoundException(`Participant with ID "${id}" not found`);
+        }
+        const oldEventId = existingParticipant.event;
+        if (newEventId && oldEventId && newEventId !== oldEventId.toString()) {
+            const oldEvent = await this.eventModel.findById(oldEventId).exec();
+            if (oldEvent) {
+                oldEvent.participants = oldEvent.participants.filter((participantId) => participantId.toString() !== id);
+                await oldEvent.save();
+            }
+            const newEvent = await this.eventModel.findById(newEventId).exec();
+            if (!newEvent) {
+                throw new common_1.NotFoundException(`Event with ID "${newEventId}" not found`);
+            }
+            newEvent.participants.push(existingParticipant._id);
+            await newEvent.save();
+        }
         const updatedParticipant = await this.participantModel
             .findByIdAndUpdate(id, updateParticipantDto, { new: true })
             .populate('event')
             .exec();
-        if (!updatedParticipant) {
+        return updatedParticipant;
+    }
+    async remove(id) {
+        const participant = await this.participantModel.findById(id).exec();
+        if (!participant) {
             throw new common_1.NotFoundException(`Participant with ID "${id}" not found`);
         }
-        return updatedParticipant;
+        if (participant.event) {
+            const event = await this.eventModel.findById(participant.event);
+            if (event) {
+                event.participants = event.participants.filter((participantId) => participantId.toString() !== id);
+                await event.save();
+            }
+        }
+        await this.participantModel.findByIdAndDelete(id).exec();
+        return participant;
     }
 };
 exports.ParticipantService = ParticipantService;

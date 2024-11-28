@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ConflictException, NotFoundException } from '@nestjs/common';
 import { ParticipantService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
@@ -10,7 +10,14 @@ export class ParticipantController {
 
   @Post('create')
   async create(@Body() createParticipantDto: CreateParticipantDto): Promise<Participant> {
-    return this.participantService.create(createParticipantDto);
+    try {
+      return await this.participantService.create(createParticipantDto);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error; 
+      }
+      throw error;
+    }
   }
 
   @Get()
@@ -23,13 +30,26 @@ export class ParticipantController {
     return this.participantService.findOne(id);
   }
 
-  @Put('Update/:id')
+  @Put('update/:id') 
   async update(
     @Param('id') id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ): Promise<Participant> {
-    return this.participantService.update(id, updateParticipantDto);
+    try {
+      return await this.participantService.update(id, updateParticipantDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Participant with ID "${id}" not found`);
+      }
+      throw error;
+    }
   }
+
+  @Delete('delete/:id')
+async remove(@Param('id') id: string): Promise<Participant> {
+  return this.participantService.remove(id);
+}
+
 
  
 }
