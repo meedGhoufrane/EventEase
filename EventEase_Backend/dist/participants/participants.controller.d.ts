@@ -9,4 +9,5 @@ export declare class ParticipantController {
     findAll(): Promise<Participant[]>;
     findOne(id: string): Promise<Participant>;
     update(id: string, updateParticipantDto: UpdateParticipantDto): Promise<Participant>;
+    remove(id: string): Promise<Participant>;
 }

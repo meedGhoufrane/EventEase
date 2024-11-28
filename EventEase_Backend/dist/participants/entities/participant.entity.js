@@ -20,9 +20,13 @@ __decorate([
     __metadata("design:type", String)
 ], Participant.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)({ required: true, unique: true }),
     __metadata("design:type", String)
 ], Participant.prototype, "email", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    __metadata("design:type", String)
+], Participant.prototype, "cin", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'Event', required: true }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
@@ -31,4 +35,6 @@ exports.Participant = Participant = __decorate([
     (0, mongoose_1.Schema)()
 ], Participant);
 exports.ParticipantSchema = mongoose_1.SchemaFactory.createForClass(Participant);
+exports.ParticipantSchema.index({ email: 1 }, { unique: true });
+exports.ParticipantSchema.index({ cin: 1 }, { unique: true });
 //# sourceMappingURL=participant.entity.js.map

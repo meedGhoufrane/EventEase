@@ -1,6 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Participant } from '../../participants/entities/participant.entity'; // Import Participant schema
+import { Participant } from '../../participants/entities/participant.entity'; 
 
 @Schema()
 export class Event extends Document {
