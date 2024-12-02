@@ -31,12 +31,12 @@ const Login = () => {
                     password: values.password,
                 });
 
-                console.log(response.data); // Debugging purposes
+                console.log(response.data); 
 
-                // Destructure user and token from response
+               
                 const { user, token } = response.data;
 
-                // Store in localStorage
+           
                 localStorage.setItem('authToken', token);
                 localStorage.setItem('username', user.username);
 

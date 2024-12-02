@@ -41,12 +41,6 @@ const Dashboard = () => {
                     >
                         Participants
                     </Link>
-                    <Link
-                        to="/dashboard/profile"
-                        className="block p-3 rounded-lg bg-blue-700 hover:bg-blue-600"
-                    >
-                        Profile
-                    </Link>
                 </nav>
             </aside>
 
