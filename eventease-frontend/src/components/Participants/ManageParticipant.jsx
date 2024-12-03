@@ -6,10 +6,9 @@ const ManageParticipant = () => {
     const [participants, setParticipants] = useState([]);
     const [events, setEvents] = useState([]);
     const [formData, setFormData] = useState({ name: '', email: '', cin: '', event: '' });
-    const [isUpdating, setIsUpdating] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [selectedParticipantId, setSelectedParticipantId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -139,7 +138,7 @@ const ManageParticipant = () => {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
-                        <h2 className="text-2xl font-bold mb-4">{isUpdating ? 'Update Participant' : 'Create Participant'}</h2>
+                        <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Update Participant' : 'Create Participant'}</h2>
                         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-6">
                             <div className="mb-4">
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>

@@ -20,21 +20,6 @@ const EventManagement = () => {
         maxParticipants: 0
     });
 
-    const editEvent = (event) => {
-        setIsEditing(true);
-        setFormData(event); 
-    };
-
-    const createNewEvent = () => {
-        setIsEditing(false);
-        setFormData({
-            name: '',
-            description: '',
-            date: '',
-            location: '',
-            maxParticipants: 0
-        });
-    };
 
 
     useEffect(() => {
