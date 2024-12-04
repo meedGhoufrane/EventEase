@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, BadRequestException,Req, UseGuards } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { JwtAuthGuard } from '../common/auth/auth.guard';
 
 @Controller('events')
+@UseGuards(JwtAuthGuard)
 export class EventController {
   constructor(private readonly eventService: EventService) { }
 
@@ -17,10 +19,22 @@ export class EventController {
     return this.eventService.findAll();
   }
 
+  
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.eventService.findOne(id);
+  async findOne(@Param() params: any, @Req() req: any) {
+    // console.log('Full Params:', params);
+    // console.log('Request Params:', req.params);
+    // console.log('Received ID:', params.id);
+  
+    const id = params.id;
+  
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new BadRequestException('Invalid ObjectId format.');
+    }
+    return this.eventService.getEventById(id);
   }
+  
+
 
   @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {

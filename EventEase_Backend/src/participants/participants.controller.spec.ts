@@ -1,110 +1,131 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { ParticipantController } from './participants.controller';
-// import { ParticipantService } from './participants.service';
-// import { CreateParticipantDto } from './dto/create-participant.dto';
-// import { UpdateParticipantDto } from './dto/update-participant.dto';
-// import { Participant } from './entities/participant.entity';
-// import { Types } from 'mongoose'; // Import Types for ObjectId
+import { Test, TestingModule } from '@nestjs/testing';
+import { ParticipantController } from './participants.controller';
+import { ParticipantService } from './participants.service';
+import { CreateParticipantDto } from './dto/create-participant.dto';
+import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { Types } from 'mongoose';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 
-// describe('ParticipantController', () => {
-//   let controller: ParticipantController;
-//   let service: ParticipantService;
+describe('ParticipantController', () => {
+  let controller: ParticipantController;
+  let service: ParticipantService;
 
-//   const mockObjectId = new Types.ObjectId(); // Simulate an ObjectId
+  const mockObjectId = new Types.ObjectId();
 
-//   // Mock participant with _id included
-//   const mockParticipant: Participant = {
-//     // _id: mockObjectId, // Mock _id as ObjectId
-//     name: 'John Doe',
-//     email: 'john@example.com',
-//     event: mockObjectId, // Use ObjectId for event
-//   };
+  const mockParticipant = {
+    _id: mockObjectId,
+    name: 'John Doe',
+    email: 'john@example.com',
+    cin: 'CIN123456',
+    event: mockObjectId,
+  };
 
-//   const mockService = {
-//     create: jest.fn().mockResolvedValue(mockParticipant),
-//     findAll: jest.fn().mockResolvedValue([mockParticipant]),
-//     findOne: jest.fn().mockResolvedValue(mockParticipant),
-//     update: jest.fn().mockResolvedValue({
-//       ...mockParticipant,
-//       name: 'Updated Name',
-//     }),
-//   };
+  const mockService = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+  };
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [ParticipantController],
-//       providers: [
-//         {
-//           provide: ParticipantService,
-//           useValue: mockService,
-//         },
-//       ],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [ParticipantController],
+      providers: [
+        {
+          provide: ParticipantService,
+          useValue: mockService,
+        },
+      ],
+    }).compile();
 
-//     controller = module.get<ParticipantController>(ParticipantController);
-//     service = module.get<ParticipantService>(ParticipantService);
-//   });
+    controller = module.get<ParticipantController>(ParticipantController);
+    service = module.get<ParticipantService>(ParticipantService);
+  });
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//     expect(service).toBeDefined();
-//   });
+  describe('create', () => {
+    it('should create a participant successfully', async () => {
+      const createDto: CreateParticipantDto = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        cin: 'CIN123456',
+        event: mockObjectId.toString(),
+      };
 
-//   describe('create', () => {
-//     it('should create a participant', async () => {
-//       const createDto: CreateParticipantDto = {
-//         name: 'John Doe',
-//         email: 'john@example.com',
-//         event: mockObjectId.toHexString(), // Pass a valid ObjectId string
-//       };
+      mockService.create.mockResolvedValue(mockParticipant);
 
-//       const result = await controller.create(createDto);
+      const result = await controller.create(createDto);
 
-//       expect(service.create).toHaveBeenCalledWith(createDto);
-//       expect(result).toEqual(mockParticipant);
-//     });
-//   });
+      expect(service.create).toHaveBeenCalledWith(createDto);
+      expect(result).toEqual(mockParticipant);
+    });
 
-//   describe('findAll', () => {
-//     it('should return all participants', async () => {
-//       const result = await controller.findAll();
+    it('should handle ConflictException during creation', async () => {
+      const createDto: CreateParticipantDto = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        cin: 'CIN123456',
+        event: mockObjectId.toString(),
+      };
 
-//       expect(service.findAll).toHaveBeenCalled();
-//       expect(result).toEqual([mockParticipant]);
-//     });
-//   });
+      mockService.create.mockRejectedValue(new ConflictException('Email already exists'));
 
-//   describe('findOne', () => {
-//     it('should return a participant by ID', async () => {
-//       const id = mockObjectId.toHexString();
+      await expect(controller.create(createDto)).rejects.toThrow(ConflictException);
+    });
+  });
 
-//       const result = await controller.findOne(id);
+  describe('findAll', () => {
+    it('should return all participants', async () => {
+      mockService.findAll.mockResolvedValue([mockParticipant]);
 
-//       expect(service.findOne).toHaveBeenCalledWith(id);
-//       expect(result).toEqual(mockParticipant);
-//     });
-//   });
+      const result = await controller.findAll();
 
-//   describe('update', () => {
-//     it('should update a participant by ID', async () => {
-//       const id = mockObjectId.toHexString();
-//       const updateDto: UpdateParticipantDto = {
-//         name: 'Updated Name',
-//         email: 'john@example.com',
-//         event: mockObjectId.toHexString(),
-//       };
+      expect(service.findAll).toHaveBeenCalled();
+      expect(result).toEqual([mockParticipant]);
+    });
+  });
 
-//       const result = await controller.update(id, updateDto);
+  describe('findOne', () => {
+    it('should return a participant by ID', async () => {
+      const id = mockObjectId.toString();
+      mockService.findOne.mockResolvedValue(mockParticipant);
 
-//       expect(service.update).toHaveBeenCalledWith(id, updateDto);
-//       expect(result).toEqual({
-//         ...mockParticipant,
-//         name: 'Updated Name',
-//       });
-//     });
-//   });
-// });
+      const result = await controller.findOne(id);
+
+      expect(service.findOne).toHaveBeenCalledWith(id);
+      expect(result).toEqual(mockParticipant);
+    });
+  });
+
+  describe('update', () => {
+    it('should update a participant successfully', async () => {
+      const id = mockObjectId.toString();
+      const updateDto: UpdateParticipantDto = {
+        name: 'Updated Name',
+        email: 'updated@example.com',
+      };
+
+      const updatedParticipant = { ...mockParticipant, ...updateDto };
+      mockService.update.mockResolvedValue(updatedParticipant);
+
+      const result = await controller.update(id, updateDto);
+
+      expect(service.update).toHaveBeenCalledWith(id, updateDto);
+      expect(result).toEqual(updatedParticipant);
+    });
+
+    it('should handle NotFoundException during update', async () => {
+      const id = mockObjectId.toString();
+      const updateDto: UpdateParticipantDto = {
+        name: 'Updated Name',
+      };
+
+      mockService.update.mockRejectedValue(new NotFoundException());
+
+      await expect(controller.update(id, updateDto)).rejects.toThrow(NotFoundException);
+    });
+  });
+});

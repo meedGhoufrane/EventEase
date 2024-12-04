@@ -48,7 +48,7 @@ let ParticipantService = class ParticipantService {
             }
             event.participants.push(savedParticipant._id);
             await event.save();
-            return savedParticipant;
+            return savedParticipant.populate('event');
         }
         catch (error) {
             if (error.code === 11000) {
@@ -58,7 +58,7 @@ let ParticipantService = class ParticipantService {
         }
     }
     async findAll() {
-        return this.participantModel.find().populate('event').exec();
+        return this.participantModel.find().populate('event');
     }
     async findOne(id) {
         const participant = await this.participantModel.findById(id).populate('event').exec();
@@ -92,21 +92,6 @@ let ParticipantService = class ParticipantService {
             .populate('event')
             .exec();
         return updatedParticipant;
-    }
-    async remove(id) {
-        const participant = await this.participantModel.findById(id).exec();
-        if (!participant) {
-            throw new common_1.NotFoundException(`Participant with ID "${id}" not found`);
-        }
-        if (participant.event) {
-            const event = await this.eventModel.findById(participant.event);
-            if (event) {
-                event.participants = event.participants.filter((participantId) => participantId.toString() !== id);
-                await event.save();
-            }
-        }
-        await this.participantModel.findByIdAndDelete(id).exec();
-        return participant;
     }
 };
 exports.ParticipantService = ParticipantService;

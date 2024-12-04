@@ -1,124 +1,153 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { EventController } from './event.controller';
-// import { EventService } from './event.service';
-// import { CreateEventDto } from './dto/create-event.dto';
-// import { UpdateEventDto } from './dto/update-event.dto';
-// import { Event } from './entities/event.entity';
-// import { Types } from 'mongoose'; // Import Types for ObjectId
+import { Test, TestingModule } from '@nestjs/testing';
+import { EventController } from './event.controller';
+import { EventService } from './event.service';
+import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { BadRequestException } from '@nestjs/common';
+import { Types } from 'mongoose';
 
-// describe('EventController', () => {
-//   let controller: EventController;
-//   let service: EventService;
+describe('EventController', () => {
+  let controller: EventController;
+  let service: EventService;
 
-//   const mockObjectId = new Types.ObjectId(); // Mock ObjectId for event and participants
+  const mockObjectId = new Types.ObjectId();
 
-//   // Mock event data
-//   const mockEvent: Partial<Event> = {
-//     _id: mockObjectId,
-//     name: 'Sample Event',
-//     description: 'This is a sample event',
-//     date: new Date(),
-//     location: 'Sample Location',
-//     participants: [mockObjectId], // Correctly pass ObjectId here
-//     maxParticipants: 100,
-//   };
+  beforeEach(async () => {
+    const mockEventService = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      getEventById: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn(),
+    };
 
-//   const mockService = {
-//     create: jest.fn().mockResolvedValue(mockEvent),
-//     findAll: jest.fn().mockResolvedValue([mockEvent]),
-//     findOne: jest.fn().mockResolvedValue(mockEvent),
-//     update: jest.fn().mockResolvedValue({ ...mockEvent, name: 'Updated Event' }),
-//     remove: jest.fn().mockResolvedValue(mockEvent),
-//   };
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [EventController],
+      providers: [
+        { provide: EventService, useValue: mockEventService },
+      ],
+    }).compile();
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [EventController],
-//       providers: [
-//         {
-//           provide: EventService,
-//           useValue: mockService,
-//         },
-//       ],
-//     }).compile();
+    controller = module.get<EventController>(EventController);
+    service = module.get<EventService>(EventService);
+  });
 
-//     controller = module.get<EventController>(EventController);
-//     service = module.get<EventService>(EventService);
-//   });
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+  describe('create', () => {
+    it('should create an event successfully', async () => {
+      const createEventDto: CreateEventDto = {
+        name: 'Test Event',
+        description: 'Test Description',
+        date: new Date(),
+        location: 'Test Location',
+        participants: [mockObjectId],
+        maxParticipants: 100
+      };
+      
+      const expectedResult = {
+        event: { ...createEventDto, _id: mockObjectId },
+        message: 'Event created successfully'
+      };
 
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//     expect(service).toBeDefined();
-//   });
+      // @ts-ignore
+      jest.spyOn(service, 'create').mockResolvedValue(expectedResult);
 
-//   describe('create', () => {
-//     it('should create a new event', async () => {
-//       const createDto: CreateEventDto = {
-//         name: 'Sample Event',
-//         description: 'This is a sample event',
-//         date: new Date(),
-//         location: 'Sample Location',
-//         participants: [mockObjectId], // Correctly pass ObjectId
-//       };
+      const result = await controller.create(createEventDto);
+      expect(result).toEqual(expectedResult);
+      expect(service.create).toHaveBeenCalledWith(createEventDto);
+    });
+  });
 
-//       const result = await controller.create(createDto);
+  describe('findAll', () => {
+    it('should return an array of events', async () => {
+      const expectedEvents = [
+        {
+          _id: mockObjectId,
+          name: 'Event 1',
+          description: 'Description 1',
+          date: new Date(),
+          location: 'Location 1',
+          participants: [],
+          maxParticipants: 100
+        }
+      ];
 
-//       expect(service.create).toHaveBeenCalledWith(createDto);
-//       expect(result).toEqual(mockEvent);
-//     });
-//   });
+      // @ts-ignore
+      jest.spyOn(service, 'findAll').mockResolvedValue(expectedEvents);
 
-//   describe('findAll', () => {
-//     it('should return all events', async () => {
-//       const result = await controller.findAll();
+      const result = await controller.findAll();
+      expect(result).toEqual(expectedEvents);
+      expect(service.findAll).toHaveBeenCalled();
+    });
+  });
 
-//       expect(service.findAll).toHaveBeenCalled();
-//       expect(result).toEqual([mockEvent]);
-//     });
-//   });
+  describe('findOne', () => {
+    it('should return an event by id', async () => {
+      const eventId = mockObjectId.toString();
+      const expectedEvent = {
+        _id: mockObjectId,
+        name: 'Event 1',
+        description: 'Description 1',
+        date: new Date(),
+        location: 'Location 1',
+        participants: [],
+        maxParticipants: 100
+      };
 
-//   describe('findOne', () => {
-//     it('should return an event by ID', async () => {
-//       const id = mockObjectId.toHexString();
+      // @ts-ignore
+      jest.spyOn(service, 'getEventById').mockResolvedValue(expectedEvent);
 
-//       const result = await controller.findOne(id);
+      const result = await controller.findOne({ id: eventId }, { params: { id: eventId } });
+      expect(result).toEqual(expectedEvent);
+      expect(service.getEventById).toHaveBeenCalledWith(eventId);
+    });
 
-//       expect(service.findOne).toHaveBeenCalledWith(id);
-//       expect(result).toEqual(mockEvent);
-//     });
-//   });
+    it('should throw BadRequestException for invalid ObjectId', async () => {
+      const invalidId = 'invalid-id';
 
-//   describe('update', () => {
-//     it('should update an event by ID', async () => {
-//       const id = mockObjectId.toHexString();
-//       const updateDto: UpdateEventDto = {
-//         name: 'Updated Event',
-//         description: 'This is the updated event',
-//         date: new Date(),
-//         location: 'Updated Location',
-//         participants: [mockObjectId], // Correctly pass ObjectId
-//         maxParticipants: 150,
-//       };
+      await expect(
+        controller.findOne({ id: invalidId }, { params: { id: invalidId } })
+      ).rejects.toThrow(BadRequestException);
+      
+      expect(service.getEventById).not.toHaveBeenCalled();
+    });
+  });
 
-//       const result = await controller.update(id, updateDto);
+  describe('update', () => {
+    it('should update an event successfully', async () => {
+      const eventId = mockObjectId.toString();
+      const updateEventDto: UpdateEventDto = {
+        name: 'Updated Event',
+        description: 'Updated Description'
+      };
 
-//       expect(service.update).toHaveBeenCalledWith(id, updateDto);
-//       expect(result).toEqual({ ...mockEvent, name: 'Updated Event' });
-//     });
-//   });
+      const expectedResult = {
+        event: { ...updateEventDto, _id: mockObjectId },
+        message: 'Event updated successfully'
+      };
 
-//   describe('remove', () => {
-//     it('should delete an event by ID', async () => {
-//       const id = mockObjectId.toHexString();
+      // @ts-ignore
+      jest.spyOn(service, 'update').mockResolvedValue(expectedResult);
 
-//       const result = await controller.remove(id);
+      const result = await controller.update(eventId, updateEventDto);
+      expect(result).toEqual(expectedResult);
+      expect(service.update).toHaveBeenCalledWith(eventId, updateEventDto);
+    });
+  });
 
-//       expect(service.remove).toHaveBeenCalledWith(id);
-//       expect(result).toEqual(mockEvent);
-//     });
-//   });
-// });
+  describe('remove', () => {
+    it('should remove an event successfully', async () => {
+      const eventId = mockObjectId.toString();
+      const expectedResult = { message: 'Event deleted successfully' };
+
+      jest.spyOn(service, 'remove').mockResolvedValue(expectedResult);
+
+      const result = await controller.remove(eventId);
+      expect(result).toEqual(expectedResult);
+      expect(service.remove).toHaveBeenCalledWith(eventId);
+    });
+  });
+});

@@ -1,13 +1,17 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ConflictException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ConflictException, NotFoundException, UseGuards } from '@nestjs/common';
 import { ParticipantService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { Participant } from './entities/participant.entity';
+import { JwtAuthGuard } from '../common/auth/auth.guard';
+
 
 @Controller('participants')
+@UseGuards(JwtAuthGuard) 
+
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
-
+  
   @Post('create')
   async create(@Body() createParticipantDto: CreateParticipantDto): Promise<Participant> {
     try {
@@ -45,11 +49,5 @@ export class ParticipantController {
     }
   }
 
-  @Delete('delete/:id')
-async remove(@Param('id') id: string): Promise<Participant> {
-  return this.participantService.remove(id);
-}
 
-
- 
 }

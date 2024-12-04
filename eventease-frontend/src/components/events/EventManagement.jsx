@@ -115,14 +115,17 @@ const EventManagement = () => {
     const handleViewDetails = async (eventId) => {
         try {
             const response = await axiosInstance.get(`/events/${eventId}`);
-            setSelectedEvent(response.data); 
+            console.log('Event details:', response.data);
+            setSelectedEvent(response.data);
             setViewDetailsModalOpen(true);
         } catch (error) {
+            console.error('Error fetching event details:', error);
             toast.error('Error fetching event details');
         }
     };
 
-
+ console.log(selectedEvent);
+ 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Event Management</h1>
@@ -188,39 +191,54 @@ const EventManagement = () => {
             {/* View Details Modal */}
             {viewDetailsModalOpen && selectedEvent && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 overflow-y-auto">
+                    <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 overflow-y-auto max-h-[80vh]">
                         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Event Details</h2>
 
                         <div className="space-y-4">
                             <div className="flex flex-col">
                                 <strong className="text-gray-700">Name:</strong>
-                                <p className="text-gray-800">{selectedEvent.name}</p>
+                                <p className="text-gray-800">{selectedEvent.event.name}</p>
+                            </div>
+                            <div className="flex flex-col">
+                                <strong className="text-gray-700">Description:</strong>
+                                <p className="text-gray-800">{selectedEvent.event.description}</p>
                             </div>
                             <div className="flex flex-col">
                                 <strong className="text-gray-700">Date:</strong>
-                                <p className="text-gray-800">{new Date(selectedEvent.date).toLocaleDateString()}</p>
+                                <p className="text-gray-800">{new Date(selectedEvent.event.date).toLocaleDateString()}</p>
                             </div>
                             <div className="flex flex-col">
                                 <strong className="text-gray-700">Location:</strong>
-                                <p className="text-gray-800">{selectedEvent.location}</p>
+                                <p className="text-gray-800">{selectedEvent.event.location}</p>
                             </div>
                             <div className="flex flex-col">
                                 <strong className="text-gray-700">Max Participants:</strong>
-                                <p className="text-gray-800">{selectedEvent.maxParticipants}</p>
+                                <p className="text-gray-800">{selectedEvent.event.maxParticipants}</p>
                             </div>
 
-                            <div className="mt-4">
-                                <strong className="text-gray-700">Participants:</strong>
+                            <div className="mt-6">
+                                <strong className="text-gray-700 text-lg block mb-3">Participants:</strong>
                                 {selectedEvent.participants && selectedEvent.participants.length > 0 ? (
-                                    <ul className="list-disc pl-5 text-gray-800">
-                                        {selectedEvent.participants.map((participant) => (
-                                            <li key={participant._id}>
-                                                {participant.name} ({participant.email})
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <table className="min-w-full">
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-left text-gray-600 pb-2">Name</th>
+                                                    <th className="text-left text-gray-600 pb-2">Email</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {selectedEvent.participants.map((participant, index) => (
+                                                    <tr key={participant._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                        <td className="py-2 px-2">{participant.name}</td>
+                                                        <td className="py-2 px-2">{participant.email}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 ) : (
-                                    <p className="text-gray-500">No participants</p>
+                                    <p className="text-gray-500 italic">No participants registered yet</p>
                                 )}
                             </div>
                         </div>

@@ -42,7 +42,8 @@ export class ParticipantService {
       event.participants.push(savedParticipant._id as Types.ObjectId);
       await event.save();
   
-      return savedParticipant;
+      
+      return savedParticipant.populate('event');
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Duplicate key error');
@@ -52,7 +53,7 @@ export class ParticipantService {
   }
 
   async findAll(): Promise<Participant[]> {
-    return this.participantModel.find().populate('event').exec();
+    return this.participantModel.find().populate('event');
   }
 
   async findOne(id: string): Promise<Participant> {
@@ -98,28 +99,7 @@ export class ParticipantService {
   
     return updatedParticipant;
   }
-  
 
-  async remove(id: string): Promise<Participant> {
-    const participant = await this.participantModel.findById(id).exec();
   
-    if (!participant) {
-      throw new NotFoundException(`Participant with ID "${id}" not found`);
-    }
-  
-    if (participant.event) {
-      const event = await this.eventModel.findById(participant.event);
-      if (event) {
-        event.participants = event.participants.filter(
-          (participantId) => participantId.toString() !== id
-        );
-        await event.save();
-      }
-    }
-  
-    await this.participantModel.findByIdAndDelete(id).exec();
-  
-    return participant; 
-  }
   
 }

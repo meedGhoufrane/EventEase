@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const participants_service_1 = require("./participants.service");
 const create_participant_dto_1 = require("./dto/create-participant.dto");
 const update_participant_dto_1 = require("./dto/update-participant.dto");
+const auth_guard_1 = require("../common/auth/auth.guard");
 let ParticipantController = class ParticipantController {
     constructor(participantService) {
         this.participantService = participantService;
@@ -49,9 +50,6 @@ let ParticipantController = class ParticipantController {
             throw error;
         }
     }
-    async remove(id) {
-        return this.participantService.remove(id);
-    }
 };
 exports.ParticipantController = ParticipantController;
 __decorate([
@@ -82,15 +80,9 @@ __decorate([
     __metadata("design:paramtypes", [String, update_participant_dto_1.UpdateParticipantDto]),
     __metadata("design:returntype", Promise)
 ], ParticipantController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)('delete/:id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ParticipantController.prototype, "remove", null);
 exports.ParticipantController = ParticipantController = __decorate([
     (0, common_1.Controller)('participants'),
+    (0, common_1.UseGuards)(auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [participants_service_1.ParticipantService])
 ], ParticipantController);
 //# sourceMappingURL=participants.controller.js.map

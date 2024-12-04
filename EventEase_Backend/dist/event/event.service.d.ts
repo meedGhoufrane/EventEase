@@ -13,7 +13,18 @@ export declare class EventService {
         message: string;
     }>;
     findAll(): Promise<Event[]>;
-    findOne(id: string): Promise<Event>;
+    getEventById(eventId: string): Promise<{
+        event: Document<unknown, {}, EventDocument> & Event & Document<unknown, any, any> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        };
+        participants: (Document<unknown, {}, Participant & Document<unknown, any, any>> & Participant & Document<unknown, any, any> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        })[];
+    }>;
     update(id: string, updateEventDto: UpdateEventDto): Promise<{
         event: Event;
         message: string;

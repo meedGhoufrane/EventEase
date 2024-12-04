@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const event_service_1 = require("./event.service");
 const create_event_dto_1 = require("./dto/create-event.dto");
 const update_event_dto_1 = require("./dto/update-event.dto");
+const auth_guard_1 = require("../common/auth/auth.guard");
 let EventController = class EventController {
     constructor(eventService) {
         this.eventService = eventService;
@@ -27,8 +28,12 @@ let EventController = class EventController {
     findAll() {
         return this.eventService.findAll();
     }
-    findOne(id) {
-        return this.eventService.findOne(id);
+    async findOne(params, req) {
+        const id = params.id;
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            throw new common_1.BadRequestException('Invalid ObjectId format.');
+        }
+        return this.eventService.getEventById(id);
     }
     update(id, updateEventDto) {
         return this.eventService.update(id, updateEventDto);
@@ -53,10 +58,11 @@ __decorate([
 ], EventController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], EventController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)('update/:id'),
@@ -75,6 +81,7 @@ __decorate([
 ], EventController.prototype, "remove", null);
 exports.EventController = EventController = __decorate([
     (0, common_1.Controller)('events'),
+    (0, common_1.UseGuards)(auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [event_service_1.EventService])
 ], EventController);
 //# sourceMappingURL=event.controller.js.map

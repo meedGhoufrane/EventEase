@@ -9,7 +9,18 @@ export declare class EventController {
         message: string;
     }>;
     findAll(): Promise<import("./entities/event.entity").Event[]>;
-    findOne(id: string): Promise<import("./entities/event.entity").Event>;
+    findOne(params: any, req: any): Promise<{
+        event: import("mongoose").Document<unknown, {}, import("./entities/event.entity").EventDocument> & import("./entities/event.entity").Event & import("mongoose").Document<unknown, any, any> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        };
+        participants: (import("mongoose").Document<unknown, {}, import("../participants/entities/participant.entity").Participant & import("mongoose").Document<unknown, any, any>> & import("../participants/entities/participant.entity").Participant & import("mongoose").Document<unknown, any, any> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        })[];
+    }>;
     update(id: string, updateEventDto: UpdateEventDto): Promise<{
         event: import("./entities/event.entity").Event;
         message: string;

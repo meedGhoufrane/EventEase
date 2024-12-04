@@ -13,6 +13,9 @@ const event_entity_1 = require("./entities/event.entity");
 const participant_entity_1 = require("../participants/entities/participant.entity");
 const event_service_1 = require("./event.service");
 const event_controller_1 = require("./event.controller");
+const participants_module_1 = require("../participants/participants.module");
+const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let EventModule = class EventModule {
 };
 exports.EventModule = EventModule;
@@ -23,6 +26,15 @@ exports.EventModule = EventModule = __decorate([
                 { name: event_entity_1.Event.name, schema: event_entity_1.EventSchema },
                 { name: participant_entity_1.Participant.name, schema: participant_entity_1.ParticipantSchema },
             ]),
+            participants_module_1.ParticipantModule,
+            jwt_1.JwtModule.registerAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => ({
+                    secret: configService.get('JWT_SECRET'),
+                    signOptions: { expiresIn: '1h' },
+                }),
+            }),
         ],
         controllers: [event_controller_1.EventController],
         providers: [event_service_1.EventService],

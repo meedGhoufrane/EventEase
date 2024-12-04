@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsMongoId } from 'class-validator';
 
 export class CreateParticipantDto {
   @IsString()
@@ -13,7 +13,7 @@ export class CreateParticipantDto {
   @IsNotEmpty()
   cin: string; 
 
-  @IsString()
+  @IsMongoId()
   @IsNotEmpty()
   event: string;
 }
