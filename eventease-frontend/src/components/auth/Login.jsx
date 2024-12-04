@@ -31,9 +31,13 @@ const Login = () => {
                     password: values.password,
                 });
 
-            
+                console.log(response.data); 
+
+               
                 const { user, token } = response.data;
-                
+
+           
+
                 localStorage.setItem('authToken', token);
                 localStorage.setItem('username', user.username);
 
