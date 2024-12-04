@@ -124,8 +124,8 @@ const EventManagement = () => {
         }
     };
 
- console.log(selectedEvent);
- 
+    console.log(selectedEvent);
+
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Event Management</h1>
@@ -242,8 +242,14 @@ const EventManagement = () => {
                                 )}
                             </div>
                         </div>
+                        <div className="flex justify-between mt-6">
+                            <button
+                                onClick={() => window.print()}
+                                className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors duration-300"
+                            >
+                                Print
+                            </button>
 
-                        <div className="flex justify-end mt-6">
                             <button
                                 onClick={closeViewDetailsModal}
                                 className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300"
@@ -251,6 +257,7 @@ const EventManagement = () => {
                                 Close
                             </button>
                         </div>
+
                     </div>
                 </div>
             )}
