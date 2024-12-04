@@ -1,4 +1,4 @@
-name: CI/CD for Eventease API 
+name: CI/CD for Eventease API
 
 on: 
   push:
@@ -13,24 +13,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get into the BE folder 
-      - run: cd EventEase_Backend
-
+      # Step 1: Checkout code
       - name: Checkout code 
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
+      # Step 2: Set up Node.js
       - name: Set up Node.js 
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with: 
           node-version: '20'
 
-      - name: Install Depencies 
-      - run: npm install
+      # Step 3: Install dependencies
+      - name: Install Dependencies 
+        run: npm install
+        working-directory: EventEase_Backend
 
+      # Step 4: Create .env file
       - name: Create .env file
-      - run: |
-          echo {{ secrets.MONGO_URL}} >> .env
-          echo {{ secrets.JWT_SECRET }} >> .env 
+        run: |
+          echo "MONGO_URL=${{ secrets.MONGO_URL }}" > .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+        working-directory: EventEase_Backend
 
+      # Step 5: Run unit tests
       - name: Run unit tests
-      - run: npm test
+        run: npm test
+        working-directory: EventEase_Backend

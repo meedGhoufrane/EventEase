@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./eventease-frontend
+      dockerfile: Dockerfile
+
+    volumes:
+      - ./eventease-frontend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+
+  backend:
+    build:
+      context: ./EventEase_Backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./EventEase_Backend/.env
+    volumes:
+      - ./EventEase_Backend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
