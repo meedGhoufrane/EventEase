@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateParticipantDto.prototype, "cin", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsMongoId)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateParticipantDto.prototype, "event", void 0);

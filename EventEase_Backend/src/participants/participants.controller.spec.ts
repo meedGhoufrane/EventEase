@@ -3,8 +3,13 @@ import { ParticipantController } from './participants.controller';
 import { ParticipantService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
+<<<<<<< HEAD
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
+=======
+import { Types } from 'mongoose';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
 
 describe('ParticipantController', () => {
   let controller: ParticipantController;
@@ -16,8 +21,13 @@ describe('ParticipantController', () => {
     _id: mockObjectId,
     name: 'John Doe',
     email: 'john@example.com',
+<<<<<<< HEAD
     cin: 'ABC123',
     event: new Types.ObjectId(),
+=======
+    cin: 'CIN123456',
+    event: mockObjectId,
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
   };
 
   const mockService = {
@@ -25,7 +35,10 @@ describe('ParticipantController', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+<<<<<<< HEAD
     remove: jest.fn(),
+=======
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
   };
 
   beforeEach(async () => {
@@ -52,8 +65,13 @@ describe('ParticipantController', () => {
       const createDto: CreateParticipantDto = {
         name: 'John Doe',
         email: 'john@example.com',
+<<<<<<< HEAD
         cin: 'ABC123',
         event: mockObjectId.toHexString(),
+=======
+        cin: 'CIN123456',
+        event: mockObjectId.toString(),
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
       };
 
       mockService.create.mockResolvedValue(mockParticipant);
@@ -68,8 +86,13 @@ describe('ParticipantController', () => {
       const createDto: CreateParticipantDto = {
         name: 'John Doe',
         email: 'john@example.com',
+<<<<<<< HEAD
         cin: 'ABC123',
         event: mockObjectId.toHexString(),
+=======
+        cin: 'CIN123456',
+        event: mockObjectId.toString(),
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
       };
 
       mockService.create.mockRejectedValue(new ConflictException('Email already exists'));
@@ -79,7 +102,11 @@ describe('ParticipantController', () => {
   });
 
   describe('findAll', () => {
+<<<<<<< HEAD
     it('should return an array of participants', async () => {
+=======
+    it('should return all participants', async () => {
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
       mockService.findAll.mockResolvedValue([mockParticipant]);
 
       const result = await controller.findAll();
@@ -90,8 +117,13 @@ describe('ParticipantController', () => {
   });
 
   describe('findOne', () => {
+<<<<<<< HEAD
     it('should return a single participant', async () => {
       const id = mockObjectId.toHexString();
+=======
+    it('should return a participant by ID', async () => {
+      const id = mockObjectId.toString();
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
       mockService.findOne.mockResolvedValue(mockParticipant);
 
       const result = await controller.findOne(id);
@@ -99,6 +131,7 @@ describe('ParticipantController', () => {
       expect(service.findOne).toHaveBeenCalledWith(id);
       expect(result).toEqual(mockParticipant);
     });
+<<<<<<< HEAD
 
     it('should handle participant not found', async () => {
       const id = mockObjectId.toHexString();
@@ -106,11 +139,17 @@ describe('ParticipantController', () => {
 
       await expect(controller.findOne(id)).rejects.toThrow(NotFoundException);
     });
+=======
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
   });
 
   describe('update', () => {
     it('should update a participant successfully', async () => {
+<<<<<<< HEAD
       const id = mockObjectId.toHexString();
+=======
+      const id = mockObjectId.toString();
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
       const updateDto: UpdateParticipantDto = {
         name: 'Updated Name',
         email: 'updated@example.com',
@@ -125,8 +164,13 @@ describe('ParticipantController', () => {
       expect(result).toEqual(updatedParticipant);
     });
 
+<<<<<<< HEAD
     it('should handle participant not found during update', async () => {
       const id = mockObjectId.toHexString();
+=======
+    it('should handle NotFoundException during update', async () => {
+      const id = mockObjectId.toString();
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
       const updateDto: UpdateParticipantDto = {
         name: 'Updated Name',
       };
@@ -136,6 +180,7 @@ describe('ParticipantController', () => {
       await expect(controller.update(id, updateDto)).rejects.toThrow(NotFoundException);
     });
   });
+<<<<<<< HEAD
 
   describe('remove', () => {
     it('should remove a participant successfully', async () => {
@@ -155,4 +200,6 @@ describe('ParticipantController', () => {
       await expect(controller.remove(id)).rejects.toThrow(NotFoundException);
     });
   });
+=======
+>>>>>>> 081bf846ce52072fec771162084d2fc37bb7abb0
 });

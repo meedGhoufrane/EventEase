@@ -58,14 +58,22 @@ let EventService = class EventService {
         };
     }
     async findAll() {
-        return this.eventModel.find().populate('participants').exec();
+        return this.eventModel
+            .find()
+            .populate({
+            path: 'participants',
+            select: 'name email'
+        })
+            .exec();
     }
-    async findOne(id) {
-        const event = await this.eventModel.findById(id).populate('participants').exec();
+    async getEventById(eventId) {
+        const event = await this.eventModel
+            .findById(eventId);
         if (!event) {
-            throw new common_1.NotFoundException(`Event with ID "${id}" not found`);
+            throw new common_1.NotFoundException(`Event with ID "${eventId}" not found`);
         }
-        return event;
+        const participants = await this.participantModel.find({ event: event.id });
+        return { event, participants };
     }
     async update(id, updateEventDto) {
         const updatedEvent = await this.eventModel

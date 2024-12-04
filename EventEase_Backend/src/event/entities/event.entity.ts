@@ -19,7 +19,6 @@ export class Event extends Document {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Participant' }] })
   participants: Types.ObjectId[];
   
-
   @Prop({ required: true })
   maxParticipants: number; 
 }
