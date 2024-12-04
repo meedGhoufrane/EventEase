@@ -37,6 +37,7 @@ const Login = () => {
                 const { user, token } = response.data;
 
            
+
                 localStorage.setItem('authToken', token);
                 localStorage.setItem('username', user.username);
 
