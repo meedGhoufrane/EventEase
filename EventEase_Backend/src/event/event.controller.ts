@@ -46,4 +46,17 @@ export class EventController {
   remove(@Param('id') id: string) {
     return this.eventService.remove(id);
   }
+
+  @Get(':id/details')
+  async getEventById(@Param('id') id: string) {
+    return this.eventService.getEventById(id);
+  }
+
+  @Post(':id/participants')
+  async addParticipants(
+    @Param('id') id: string,
+    @Body() { participants }: { participants: string[] }
+  ) {
+    return this.eventService.addParticipants(id, participants);
+  }
 }

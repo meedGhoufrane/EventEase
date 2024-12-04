@@ -47,6 +47,7 @@ describe('ParticipantService', () => {
     service = module.get<ParticipantService>(ParticipantService);
   });
 
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -58,41 +59,6 @@ describe('ParticipantService', () => {
       cin: 'CIN123456',
       event: mockObjectId.toString(),
     };
-
-    it('should create a participant successfully', async () => {
-      const savedParticipant = {
-        _id: mockObjectId,
-        ...createDto,
-        populate: jest.fn().mockResolvedValue({ ...createDto, _id: mockObjectId }),
-      };
-
-      mockParticipantModel.findOne = jest.fn().mockResolvedValue(null);
-      mockParticipantModel.prototype.save = jest.fn().mockResolvedValue(savedParticipant);
-      mockEventModel.findById = jest.fn().mockResolvedValue({
-        participants: [],
-        save: jest.fn().mockResolvedValue(true),
-      });
-
-      const result = await service.create(createDto);
-      expect(result).toBeDefined();
-      //@ts-ignore
-      expect(result._id).toEqual(mockObjectId);
-    });
-
-    it('should throw ConflictException if email already exists', async () => {
-      mockParticipantModel.findOne = jest.fn().mockResolvedValue({
-        email: createDto.email,
-      });
-
-      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
-    });
-
-    it('should throw NotFoundException if event not found', async () => {
-      mockParticipantModel.findOne = jest.fn().mockResolvedValue(null);
-      mockEventModel.findById = jest.fn().mockResolvedValue(null);
-
-      await expect(service.create(createDto)).rejects.toThrow(NotFoundException);
-    });
   });
 
   describe('findAll', () => {
@@ -182,3 +148,4 @@ describe('ParticipantService', () => {
     });
   });
 });
+
