@@ -6,17 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParticipantModule = void 0;
+exports.ParticipantModule = exports.ParticipantsModule = void 0;
 const common_1 = require("@nestjs/common");
 const participants_controller_1 = require("./participants.controller");
 const participants_service_1 = require("./participants.service");
 const mongoose_1 = require("@nestjs/mongoose");
 const participant_entity_1 = require("./entities/participant.entity");
 const event_entity_1 = require("../event/entities/event.entity");
-let ParticipantModule = class ParticipantModule {
+let ParticipantsModule = class ParticipantsModule {
 };
-exports.ParticipantModule = ParticipantModule;
-exports.ParticipantModule = ParticipantModule = __decorate([
+exports.ParticipantsModule = ParticipantsModule;
+exports.ParticipantsModule = ParticipantsModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forFeature([{ name: participant_entity_1.Participant.name, schema: participant_entity_1.ParticipantSchema }]),
@@ -25,5 +25,8 @@ exports.ParticipantModule = ParticipantModule = __decorate([
         controllers: [participants_controller_1.ParticipantController],
         providers: [participants_service_1.ParticipantService],
     })
-], ParticipantModule);
+], ParticipantsModule);
+class ParticipantModule {
+}
+exports.ParticipantModule = ParticipantModule;
 //# sourceMappingURL=participants.module.js.map

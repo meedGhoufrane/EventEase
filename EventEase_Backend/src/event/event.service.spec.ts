@@ -1,106 +1,172 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { EventService } from './event.service';
-// import { getModelToken } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
-// import { Event } from './entities/event.entity';
-// import { Participant } from '../participants/entities/participant.entity';
-// import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EventService } from './event.service';
+import { getModelToken } from '@nestjs/mongoose';
+import { Event } from './entities/event.entity';
+import { Participant } from '../participants/entities/participant.entity';
+import { Model, Types } from 'mongoose';
+import { NotFoundException } from '@nestjs/common';
+import { CreateEventDto } from './dto/create-event.dto';
 
-// describe('EventService', () => {
-//   let service: EventService;
-//   let eventModel: Model<Event>;
-//   let participantModel: Model<Participant>;
+describe('EventService', () => {
+  let service: EventService;
+  let eventModel: Model<Event>;
+  let participantModel: Model<Participant>;
 
-//   const mockEventModel = {
-//     create: jest.fn(),
-//     findById: jest.fn(),
-//     findByIdAndUpdate: jest.fn(),
-//   };
+  const mockObjectId = new Types.ObjectId();
 
-//   const mockParticipantModel = {
-//     find: jest.fn(),
-//   };
+  const mockEvent = {
+    _id: mockObjectId,
+    name: 'Test Event',
+    description: 'Test Description',
+    date: new Date(),
+    location: 'Test Location',
+    participants: [],
+    maxParticipants: 100,
+    save: jest.fn(),
+    populate: jest.fn().mockReturnThis(),
+    exec: jest.fn(),
+  };
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         EventService,
-//         {
-//           provide: getModelToken(Event.name),
-//           useValue: mockEventModel,
-//         },
-//         {
-//           provide: getModelToken(Participant.name),
-//           useValue: mockParticipantModel,
-//         },
-//       ],
-//     }).compile();
+  const mockParticipant = {
+    _id: new Types.ObjectId(),
+    name: 'Test Participant',
+    email: 'test@example.com',
+    cin: 'ABC123',
+    event: mockObjectId,
+  };
 
-//     service = module.get<EventService>(EventService);
-//     eventModel = module.get<Model<Event>>(getModelToken(Event.name));
-//     participantModel = module.get<Model<Participant>>(getModelToken(Participant.name));
-//   });
+  const mockEventModel = {
+    create: jest.fn(),
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    findByIdAndDelete: jest.fn(),
+    constructor: jest.fn(),
+    save: jest.fn(),
+    exec: jest.fn(),
+  };
 
-//   afterEach(() => {
-//     jest.clearAllMocks(); 
-//   });
+  const mockParticipantModel = {
+    find: jest.fn(),
+    exec: jest.fn(),
+  };
 
-//   it('should be defined', () => {
-//     expect(service).toBeDefined();
-//   });
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        EventService,
+        {
+          provide: getModelToken(Event.name),
+          useValue: mockEventModel,
+        },
+        {
+          provide: getModelToken(Participant.name),
+          useValue: mockParticipantModel,
+        },
+      ],
+    }).compile();
 
-//   describe('create', () => {
-//     const createEventDto = {
-//       name: 'Test Event',
-//       description: 'Test Event Description',
-//       participants: ['64b8b7f4c56a460015f9b5d8'],// Example ObjectId
-//     };
+    service = module.get<EventService>(EventService);
+    eventModel = module.get<Model<Event>>(getModelToken(Event.name));
+    participantModel = module.get<Model<Participant>>(getModelToken(Participant.name));
+  });
 
-//     const mockEvent = {
-//       _id: '64b8b7f4c56a460015f9b5d9',
-//       ...createEventDto,
-//     };
+  afterEach(() => {
+    jest.clearAllMocks();
+  });  
 
-//     it('should create an event without participants', async () => {
-//       mockEventModel.create.mockResolvedValue(mockEvent);
+    
+  describe('findAll', () => {
+    it('should return all events', async () => {
+      mockEventModel.find.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue([mockEvent]),
+      });
 
-//       const result = await service.create({ name: 'Test Event' });
-//       expect(result).toEqual(mockEvent);
-//       expect(mockEventModel.create).toHaveBeenCalledWith({ name: 'Test Event' });
-//     });
+      const result = await service.findAll();
 
-//     it('should throw an error if participants are invalid', async () => {
-//       const invalidParticipants = ['invalid-id'];
+      expect(result).toEqual([mockEvent]);
+      expect(eventModel.find).toHaveBeenCalled();
+    });
+  });
 
-//       mockParticipantModel.find.mockResolvedValue([]); // No matching participants
+  describe('findOne', () => {
+    it('should return a single event', async () => {
+      mockEventModel.findById.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(mockEvent),
+      });
 
-//       await expect(
-//         service.create({ ...createEventDto, participants: invalidParticipants }),
-//       ).rejects.toThrow(NotFoundException);
+      const result = await service.findOne(mockObjectId.toString());
 
-//       expect(mockParticipantModel.find).toHaveBeenCalledWith({
-//         _id: { $in: invalidParticipants },
-//       });
-//     });
+      expect(result).toEqual(mockEvent);
+    });
 
-//     it('should create an event with valid participants', async () => {
-//       const validParticipants = ['64b8b7f4c56a460015f9b5d8'];
+    it('should throw NotFoundException if event not found', async () => {
+      mockEventModel.findById.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(null),
+      });
 
-//       mockParticipantModel.find.mockResolvedValue(validParticipants); // Simulate matching participants
-//       mockEventModel.create.mockResolvedValue(mockEvent);
+      await expect(service.findOne(mockObjectId.toString())).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
 
-//       const result = await service.create({
-//         ...createEventDto,
-//         participants: validParticipants,
-//       });
+  describe('update', () => {
+    it('should update an event successfully', async () => {
+      const updateEventDto = {
+        name: 'Updated Event',
+        description: 'Updated Description',
+      };
 
-//       expect(result).toEqual(mockEvent);
-//       expect(mockParticipantModel.find).toHaveBeenCalledWith({
-//         _id: { $in: validParticipants },
-//       });
-//       expect(mockEventModel.create).toHaveBeenCalledWith({
-//         ...createEventDto,
-//       });
-//     });
-//   });
-// });
+      const updatedEvent = { ...mockEvent, ...updateEventDto };
+
+      mockEventModel.findByIdAndUpdate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(updatedEvent),
+      });
+
+      const result = await service.update(mockObjectId.toString(), updateEventDto);
+
+      expect(result).toEqual({
+        event: updatedEvent,
+        message: 'Event updated successfully',
+      });
+    });
+
+    it('should throw NotFoundException if event not found during update', async () => {
+      mockEventModel.findByIdAndUpdate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(
+        service.update(mockObjectId.toString(), { name: 'Updated Event' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('remove', () => {
+    it('should delete an event successfully', async () => {
+      mockEventModel.findByIdAndDelete.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockEvent),
+      });
+
+      const result = await service.remove(mockObjectId.toString());
+
+      expect(result).toEqual({
+        message: 'Event deleted successfully',
+      });
+    });
+
+    it('should throw NotFoundException if event not found during deletion', async () => {
+      mockEventModel.findByIdAndDelete.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(service.remove(mockObjectId.toString())).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+});
