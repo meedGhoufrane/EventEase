@@ -1,0 +1,33 @@
+name: CI/CD for Eventease API 
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs: 
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code 
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js 
+      - uses: actions/setup-node@v3
+        with: 
+          node-version: '20'
+
+      - name: Install Depencies 
+      - run: npm install
+
+      - name: Create .env file
+      - run: |
+          echo {{ secrets.MONGO_URL}} >> .env
+          echo {{ secrets.JWT_SECRET }} >> .env 
+
+      - name: Run unit tests
+      - run: npm test
