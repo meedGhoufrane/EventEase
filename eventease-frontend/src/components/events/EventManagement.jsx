@@ -1,26 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
 import { toast } from 'react-toastify';
-import { useForm, Controller } from 'react-hook-form';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-const eventSchema = Yup.object().shape({
-    name: Yup.string().required('Event name is required'),
-    description: Yup.string().required('Event description is required'),
-    date: Yup.date()
-        .required('Event date is required')
-        .min(new Date().setHours(0, 0, 0, 0), 'Event date must be in the future'),
-    location: Yup.string().required('Event location is required'),
-    maxParticipants: Yup.number()
-        .required('Max participants is required')
-        .positive('Max participants must be a positive number')
-        .integer('Max participants must be an integer'),
-});
-
-
 
 const EventManagement = () => {
     const [events, setEvents] = useState([]);
@@ -29,16 +10,17 @@ const EventManagement = () => {
     const [editingEventId, setEditingEventId] = useState(null);
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [eventToDelete, setEventToDelete] = useState(null);
-
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-        setValue,
-        reset,
-    } = useForm({
-        resolver: yupResolver(eventSchema),
+    const [viewDetailsModalOpen, setViewDetailsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        date: '',
+        location: '',
+        maxParticipants: 0
     });
+
+
 
     useEffect(() => {
         fetchEvents();
@@ -53,13 +35,19 @@ const EventManagement = () => {
         }
     };
 
-    const handleFormSubmit = async (data) => {
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
         try {
             if (isEditing) {
-                await axiosInstance.patch(`/events/update/${editingEventId}`, data);
+                await axiosInstance.patch(`/events/update/${editingEventId}`, formData);
                 toast.success('Event updated successfully');
             } else {
-                await axiosInstance.post('/events/create', data);
+                await axiosInstance.post('/events/create', formData);
                 toast.success('Event created successfully');
             }
             fetchEvents();
@@ -72,11 +60,13 @@ const EventManagement = () => {
     const handleEdit = (event) => {
         setIsEditing(true);
         setEditingEventId(event._id);
-        setValue('name', event.name);
-        setValue('description', event.description);
-        setValue('date', event.date.split('T')[0]);
-        setValue('location', event.location);
-        setValue('maxParticipants', event.maxParticipants);
+        setFormData({
+            name: event.name,
+            description: event.description,
+            date: event.date.split('T')[0],
+            location: event.location,
+            maxParticipants: event.maxParticipants,
+        });
         setIsModalOpen(true);
     };
 
@@ -92,13 +82,18 @@ const EventManagement = () => {
     };
 
     const openModal = () => {
-        reset();
+        setFormData({
+            name: '',
+            description: '',
+            date: '',
+            location: '',
+            maxParticipants: '',
+        });
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        reset();
     };
 
     const openConfirmDeleteModal = (eventId) => {
@@ -110,6 +105,23 @@ const EventManagement = () => {
         setIsConfirmDeleteModalOpen(false);
         setEventToDelete(null);
     };
+
+
+    const closeViewDetailsModal = () => {
+        setViewDetailsModalOpen(false);
+        setSelectedEvent(null);
+    };
+
+    const handleViewDetails = async (eventId) => {
+        try {
+            const response = await axiosInstance.get(`/events/${eventId}`);
+            setSelectedEvent(response.data); 
+            setViewDetailsModalOpen(true);
+        } catch (error) {
+            toast.error('Error fetching event details');
+        }
+    };
+
 
     return (
         <div className="container mx-auto p-4">
@@ -149,6 +161,12 @@ const EventManagement = () => {
                                 <td className="px-6 py-4">{event.maxParticipants}</td>
                                 <td className="px-6 py-4 flex justify-center space-x-3">
                                     <button
+                                        onClick={() => handleViewDetails(event._id)}
+                                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300"
+                                    >
+                                        View Details
+                                    </button>
+                                    <button
                                         onClick={() => handleEdit(event)}
                                         className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300"
                                     >
@@ -167,93 +185,124 @@ const EventManagement = () => {
                 </table>
             </div>
 
+            {/* View Details Modal */}
+            {viewDetailsModalOpen && selectedEvent && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 overflow-y-auto">
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Event Details</h2>
+
+                        <div className="space-y-4">
+                            <div className="flex flex-col">
+                                <strong className="text-gray-700">Name:</strong>
+                                <p className="text-gray-800">{selectedEvent.name}</p>
+                            </div>
+                            <div className="flex flex-col">
+                                <strong className="text-gray-700">Date:</strong>
+                                <p className="text-gray-800">{new Date(selectedEvent.date).toLocaleDateString()}</p>
+                            </div>
+                            <div className="flex flex-col">
+                                <strong className="text-gray-700">Location:</strong>
+                                <p className="text-gray-800">{selectedEvent.location}</p>
+                            </div>
+                            <div className="flex flex-col">
+                                <strong className="text-gray-700">Max Participants:</strong>
+                                <p className="text-gray-800">{selectedEvent.maxParticipants}</p>
+                            </div>
+
+                            <div className="mt-4">
+                                <strong className="text-gray-700">Participants:</strong>
+                                {selectedEvent.participants && selectedEvent.participants.length > 0 ? (
+                                    <ul className="list-disc pl-5 text-gray-800">
+                                        {selectedEvent.participants.map((participant) => (
+                                            <li key={participant._id}>
+                                                {participant.name} ({participant.email})
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-gray-500">No participants</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end mt-6">
+                            <button
+                                onClick={closeViewDetailsModal}
+                                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+
+            {/* Existing Modals (Add/Edit/Delete) */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
                         <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Edit Event' : 'Add Event'}</h2>
-
-                        <form onSubmit={handleSubmit(handleFormSubmit)}>
+                        <form onSubmit={handleFormSubmit}>
                             <div className="mb-4">
                                 <label className="block text-gray-700">Name</label>
-                                <Controller
+                                <input
                                     name="name"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <input
-                                            {...field}
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    )}
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                             </div>
 
+                            {/* Description Input */}
                             <div className="mb-4">
                                 <label className="block text-gray-700">Description</label>
-                                <Controller
+                                <textarea
                                     name="description"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <textarea
-                                            {...field}
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    )}
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows="4"
                                 />
-                                {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                             </div>
 
+                            {/* Date Input */}
                             <div className="mb-4">
                                 <label className="block text-gray-700">Date</label>
-                                <Controller
+                                <input
+                                    type="date"
                                     name="date"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <input
-                                            type="date"
-                                            {...field}
-                                            min={new Date().toISOString().split("T")[0]} 
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    )}
+                                    value={formData.date}
+                                    onChange={handleInputChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
                             </div>
 
-
+                            {/* Location Input */}
                             <div className="mb-4">
                                 <label className="block text-gray-700">Location</label>
-                                <Controller
+                                <input
                                     name="location"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <input
-                                            {...field}
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    )}
+                                    value={formData.location}
+                                    onChange={handleInputChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
                             </div>
 
+                            {/* Max Participants Input */}
                             <div className="mb-4">
                                 <label className="block text-gray-700">Max Participants</label>
-                                <Controller
+                                <input
+                                    type="number"
                                     name="maxParticipants"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <input
-                                            type="number"
-                                            {...field}
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    )}
+                                    value={formData.maxParticipants}
+                                    onChange={handleInputChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                {errors.maxParticipants && (
-                                    <p className="text-red-500 text-sm">{errors.maxParticipants.message}</p>
-                                )}
                             </div>
 
+                            {/* Form Submit and Cancel Buttons */}
                             <div className="flex justify-between">
                                 <button
                                     type="button"
@@ -274,11 +323,13 @@ const EventManagement = () => {
                 </div>
             )}
 
+
             {isConfirmDeleteModalOpen && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
-                        <h3 className="text-xl font-semibold mb-4">Are you sure you want to delete this event?</h3>
-                        <div className="flex justify-between">
+                    <div className="bg-white w-full max-w-sm rounded-lg shadow-lg p-6 text-center">
+                        <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+                        <p>Are you sure you want to delete this event?</p>
+                        <div className="flex justify-center mt-6 space-x-4">
                             <button
                                 onClick={closeConfirmDeleteModal}
                                 className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600"
