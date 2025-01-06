@@ -16,7 +16,7 @@ An event management web app using NestJS & ReactJS
 ### Step 1: Clone the Repositories  
 Clone the backend and frontend repositories:  
 
-```http 
+```js 
 git clone https://github.com/meedGhoufrane/EventEase.git  
 ```  
 
