@@ -16,37 +16,37 @@ An event management web app using NestJS & ReactJS
 ### Step 1: Clone the Repositories  
 Clone the backend and frontend repositories:  
 
-\`\`\`bash  
+```http 
 git clone https://github.com/meedGhoufrane/EventEase.git  
-\`\`\`  
+```  
 
 ### Step 2: Navigate to the Project Folder  
-\`\`\`bash  
+```http   
 cd EventEase  
-\`\`\`  
+```  
 
 ### Step 3: Open the Project in Visual Studio Code  
-\`\`\`bash  
+```http   
 code .  
-\`\`\`  
+```  
 
 ### Step 4: Install Backend Dependencies and Run the Server  
 Navigate to the backend folder and install dependencies:  
 
-\`\`\`bash  
+```http   
 cd backend  
 npm install  
 npm run start:dev  
-\`\`\`  
+```  
 
 ### Step 5: Install Frontend Dependencies and Run the Client  
 Navigate to the frontend folder and install dependencies:  
 
-\`\`\`bash  
+```http 
 cd ../frontend  
 npm install  
 npm run dev  
-\`\`\`  
+```  
 
 ---
 
@@ -60,25 +60,25 @@ Make sure Docker is installed and running on your system.
 ### Step 2: Pull the Docker Images  
 Pull the prebuilt images for the services:  
 
-\`\`\`bash  
+```http  
 docker pull meedghoufrane/eventease-backend  
 docker pull meedghoufrane/eventease-frontend  
-\`\`\`  
+```  
 
 ### Step 3: Run the Containers  
 Run the containers for the services:  
 
-\`\`\`bash  
+```http 
 docker run -d -p 3001:3001 --name eventease-backend meedghoufrane/eventease-backend  
 docker run -d -p 8080:8080 --name eventease-frontend meedghoufrane/eventease-frontend  
-\`\`\`  
+```  
 
 ### Step 4: Verify the Services  
 To check if the containers are running, use the command:  
 
-\`\`\`bash  
+```http
 docker ps  
-\`\`\`  
+```  
 
 You should see the following containers listed:  
 
