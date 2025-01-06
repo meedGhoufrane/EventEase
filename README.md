@@ -21,19 +21,19 @@ git clone https://github.com/meedGhoufrane/EventEase.git
 ```  
 
 ### Step 2: Navigate to the Project Folder  
-```http   
+```js   
 cd EventEase  
 ```  
 
 ### Step 3: Open the Project in Visual Studio Code  
-```http   
+```js   
 code .  
 ```  
 
 ### Step 4: Install Backend Dependencies and Run the Server  
 Navigate to the backend folder and install dependencies:  
 
-```http   
+```js   
 cd backend  
 npm install  
 npm run start:dev  
@@ -42,7 +42,7 @@ npm run start:dev
 ### Step 5: Install Frontend Dependencies and Run the Client  
 Navigate to the frontend folder and install dependencies:  
 
-```http 
+```js 
 cd ../frontend  
 npm install  
 npm run dev  
@@ -60,7 +60,7 @@ Make sure Docker is installed and running on your system.
 ### Step 2: Pull the Docker Images  
 Pull the prebuilt images for the services:  
 
-```http  
+```js  
 docker pull meedghoufrane/eventease-backend  
 docker pull meedghoufrane/eventease-frontend  
 ```  
@@ -68,7 +68,7 @@ docker pull meedghoufrane/eventease-frontend
 ### Step 3: Run the Containers  
 Run the containers for the services:  
 
-```http 
+```js 
 docker run -d -p 3001:3001 --name eventease-backend meedghoufrane/eventease-backend  
 docker run -d -p 8080:8080 --name eventease-frontend meedghoufrane/eventease-frontend  
 ```  
@@ -76,7 +76,7 @@ docker run -d -p 8080:8080 --name eventease-frontend meedghoufrane/eventease-fro
 ### Step 4: Verify the Services  
 To check if the containers are running, use the command:  
 
-```http
+```js
 docker ps  
 ```  
 
